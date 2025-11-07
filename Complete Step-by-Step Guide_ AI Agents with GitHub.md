@@ -27,7 +27,7 @@ Open **Terminal** (Cmd + Space, type "Terminal"):
 # Install Homebrew if you don't have it
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Install Python 3.12 (current stable version)
+# Install Python 3.12 (current stable version - 3.14 is too new for some packages)
 brew install python@3.12
 
 # Install VS Code if needed
@@ -37,7 +37,7 @@ brew install --cask visual-studio-code
 brew install ollama
 
 # Verify installations
-python3.14 --version
+python3.12 --version
 code --version
 ollama --version
 ```
@@ -122,11 +122,14 @@ EOF
 ### Step 4: Set Up Python Virtual Environment
 
 ```bash
-# Create virtual environment
-python3.14 -m venv venv
+# Create virtual environment with Python 3.12
+python3.12 -m venv venv
 
 # Activate it
 source venv/bin/activate
+
+# Verify you're using the correct Python version
+python --version  # Should show Python 3.12.x
 
 # Upgrade pip
 pip install --upgrade pip

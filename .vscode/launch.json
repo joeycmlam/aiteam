@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Migration Pipeline",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/workflows/migration_pipeline.py",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "OLLAMA_HOST": "http://localhost:11434"
+      }
+    }
+  ]
+}

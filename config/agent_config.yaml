@@ -1,0 +1,23 @@
+llm:
+  provider: "ollama" # or "github_copilot"
+  model: "llama3.2"
+  temperature: 0.3
+
+jira:
+  server: "https://your-company.atlassian.net"
+  user: "your.email@company.com"
+
+workflow:
+  stages:
+    - architecture
+    - requirements
+    - testing
+    - development
+    - review
+
+  parallel_processing: false
+  max_retries: 3
+
+  # Copilot workflow options
+  use_copilot_for_review: true
+  generate_copilot_prompts: true
