@@ -37,7 +37,7 @@ brew install --cask visual-studio-code
 brew install ollama
 
 # Verify installations
-python3.12 --version
+python3.14 --version
 code --version
 ollama --version
 ```
@@ -73,8 +73,8 @@ ollama run llama3.2 "Hello, are you working?"
 cd ~/Documents
 
 # Create project
-mkdir legacy-migration-ai
-cd legacy-migration-ai
+mkdir aiteam
+cd aiteam
 
 # Create folder structure
 mkdir -p agents shared config workflows tests/features tests/fixtures monitoring .vscode/prompts
@@ -123,7 +123,7 @@ EOF
 
 ```bash
 # Create virtual environment
-python3.12 -m venv venv
+python3.14 -m venv venv
 
 # Activate it
 source venv/bin/activate
@@ -191,7 +191,7 @@ JIRA_USER=your.email@company.com
 JIRA_API_TOKEN=your_jira_token_here
 
 # Project Paths
-PROJECT_ROOT=/Users/YOUR_USERNAME/Documents/legacy-migration-ai
+PROJECT_ROOT=/Users/YOUR_USERNAME/Documents/aiteam
 LEGACY_CODE_PATH=/path/to/your/legacy/codebase
 
 # LLM Provider (options: github_copilot, ollama)
@@ -1455,7 +1455,7 @@ Provide complete refactored code.
 ollama serve
 
 # Terminal 2: Run pipeline
-cd ~/Documents/legacy-migration-ai
+cd ~/Documents/aiteam
 source venv/bin/activate
 python workflows/migration_pipeline.py
 ```
@@ -1478,7 +1478,7 @@ echo "✅ Ollama started (PID: $OLLAMA_PID)"
 sleep 3
 
 # Activate venv and run pipeline
-cd ~/Documents/legacy-migration-ai
+cd ~/Documents/aiteam
 source venv/bin/activate
 
 echo "🤖 Running migration pipeline..."
