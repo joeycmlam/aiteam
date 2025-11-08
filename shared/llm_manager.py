@@ -12,13 +12,14 @@ load_dotenv(override=True)
 class LLMManager:
     """Manages LLM calls using GitHub Copilot CLI, Ollama, or other providers"""
     
-    def __init__(self, provider: str = None):
+    def __init__(self, provider: str = None, model: str = None):
         self.provider = provider or os.getenv('LLM_PROVIDER', 'ollama')
         self.github_token = os.getenv('GITHUB_TOKEN')
         self.ollama_host = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
-        self.ollama_model = os.getenv('OLLAMA_MODEL', 'llama3.2')
+        self.ollama_model = model or os.getenv('OLLAMA_MODEL', 'llama3.2')
+        self.github_model = model or os.getenv('GITHUB_MODEL', 'gpt-4o')
         
-        print(f"🤖 LLM Manager initialized with provider: {self.provider}")
+        print(f"🤖 LLM Manager initialized with provider: {self.provider}, model: {self.github_model if self.provider == 'github_copilot_cli' else self.ollama_model}")
         
         # Check if gh CLI is available for github_copilot_cli provider
         if self.provider == 'github_copilot_cli':
@@ -31,15 +32,25 @@ class LLMManager:
             except FileNotFoundError:
                 print("⚠️  GitHub CLI not found. Install with: brew install gh")
     
-    def generate(self, prompt: str, system_message: str = None, max_tokens: int = 4000) -> str:
-        """Generate text using configured LLM"""
+    def generate(self, prompt: str, system_message: str = None, max_tokens: int = 4000, model: str = None) -> str:
+        """
+        Generate text using configured LLM
         
+        Args:
+            prompt: The user prompt
+            system_message: Optional system message to set context
+            max_tokens: Maximum tokens in response
+            model: Override model for this request (e.g., 'gpt-4o', 'gpt-4o-mini', 'llama3.2')
+        
+        Returns:
+            Generated text response
+        """
         if self.provider == 'github_copilot_cli':
-            return self._generate_with_github_copilot_cli(prompt, system_message)
+            return self._generate_with_github_copilot_cli(prompt, system_message, model=model)
         elif self.provider == 'github_copilot':
             return self._generate_with_github_copilot(prompt, system_message)
         else:
-            return self._generate_with_ollama(prompt, system_message)
+            return self._generate_with_ollama(prompt, system_message, model=model)
     
     def _fallback_to_ollama(self, prompt: str, system_message: str = None, reason: str = None) -> str:
         """Helper method to fallback to Ollama with consistent messaging"""
@@ -62,7 +73,7 @@ class LLMManager:
         except Exception as e:
             return self._fallback_to_ollama(prompt, system_message, f"GitHub Copilot API error: {e}")
     
-    def _generate_with_github_copilot_cli(self, prompt: str, system_message: str = None) -> str:
+    def _generate_with_github_copilot_cli(self, prompt: str, system_message: str = None, model: str = None) -> str:
         """
         Use GitHub Models API (available with Copilot subscription)
         
@@ -73,7 +84,15 @@ class LLMManager:
         (Claude models are NOT available)
         
         Requires: GITHUB_TOKEN in .env file with 'read:user' scope
+        
+        Args:
+            prompt: User prompt
+            system_message: Optional system message
+            model: Override model (default: gpt-4o)
         """
+        # Use provided model or default
+        selected_model = model or self.github_model
+        
         # Check if GitHub token is configured
         if not self.github_token:
             print("   GITHUB_TOKEN not found in .env file")
@@ -82,7 +101,7 @@ class LLMManager:
             return self._fallback_to_ollama(prompt, system_message)
         
         try:            
-            print("   🤖 Calling GitHub Models API (GPT-4o)...")
+            print(f"   🤖 Calling GitHub Models API ({selected_model})...")
             
             # Build messages
             messages = []
@@ -95,7 +114,7 @@ class LLMManager:
                 "https://models.inference.ai.azure.com/chat/completions",
                 json={
                     "messages": messages,
-                    "model": "gpt-4o",  # Options: gpt-4o, gpt-4o-mini, mistral-large
+                    "model": selected_model,  # Options: gpt-4o, gpt-4o-mini, mistral-large
                     "temperature": 0.3,
                     "max_tokens": 4000,
                     "top_p": 1.0
@@ -150,8 +169,18 @@ class LLMManager:
             return self._fallback_to_ollama(prompt, system_message,
                                            f"Unexpected error: {type(e).__name__}: {e}")
     
-    def _generate_with_ollama(self, prompt: str, system_message: str = None) -> str:
-        """Use Ollama local LLM"""
+    def _generate_with_ollama(self, prompt: str, system_message: str = None, model: str = None) -> str:
+        """
+        Use Ollama local LLM
+        
+        Args:
+            prompt: User prompt
+            system_message: Optional system message
+            model: Override model (default: llama3.2)
+        """
+        # Use provided model or default
+        selected_model = model or self.ollama_model
+        
         try:
             # Build the full prompt
             full_prompt = prompt
@@ -160,7 +189,7 @@ class LLMManager:
             
             # Call Ollama
             response = ollama.generate(
-                model=self.ollama_model,
+                model=selected_model,
                 prompt=full_prompt
             )
             
@@ -178,8 +207,15 @@ class LLMManager:
             # Return a fallback response
             return f"[LLM unavailable - manual review needed]\n\nPrompt was: {prompt[:200]}..."
     
-    def analyze_code(self, code: str, question: str) -> str:
-        """Analyze code with specific question"""
+    def analyze_code(self, code: str, question: str, model: str = None) -> str:
+        """
+        Analyze code with specific question
+        
+        Args:
+            code: Code to analyze
+            question: Question about the code
+            model: Optional model override
+        """
         prompt = f"""Analyze this code:
 
 ```
@@ -190,10 +226,17 @@ Question: {question}
 
 Provide a concise analysis:"""
         
-        return self.generate(prompt, system_message="You are a senior software architect.")
+        return self.generate(prompt, system_message="You are a senior software architect.", model=model)
     
-    def generate_code(self, requirements: str, language: str = "python") -> str:
-        """Generate code from requirements"""
+    def generate_code(self, requirements: str, language: str = "python", model: str = None) -> str:
+        """
+        Generate code from requirements
+        
+        Args:
+            requirements: Code requirements
+            language: Programming language (default: python)
+            model: Optional model override
+        """
         prompt = f"""Generate {language} code for these requirements:
 
 {requirements}
@@ -205,4 +248,4 @@ Provide clean, production-ready code with:
 
 Code:"""
         
-        return self.generate(prompt, system_message=f"You are an expert {language} developer.")
+        return self.generate(prompt, system_message=f"You are an expert {language} developer.", model=model)
