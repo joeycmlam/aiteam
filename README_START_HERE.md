@@ -33,11 +33,6 @@ This will:
 python3 test_llm.py
 ```
 
-### Test GitHub Copilot Setup
-```bash
-python3 test_github_copilot.py
-```
-
 ### Test Claude 3.5 Sonnet (via GitHub Models API)
 ```bash
 # First: Get GitHub token and add to .env (see GITHUB_MODELS_SETUP.md)
@@ -134,15 +129,6 @@ python3 test_llm.py
 ```
 Expected: Generates a simple Python function
 
-### `test_github_copilot.py`
-Comprehensive test of GitHub Copilot integration:
-- Checks VS Code installation
-- Verifies Copilot extensions
-- Tests Ollama connection
-- Creates demo file for practice
-```bash
-python3 test_github_copilot.py
-```
 
 ### `workflows/migration_pipeline.py`
 Main AI agent workflow:
