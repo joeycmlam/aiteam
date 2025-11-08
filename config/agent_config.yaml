@@ -4,8 +4,8 @@ llm:
   temperature: 0.3
 
 jira:
-  server: "https://your-company.atlassian.net"
-  user: "your.email@company.com"
+  server: "https://joeycmlam-1762529818344.atlassian.net"
+  user: "joey.cm.lam@gmail.com"
 
 workflow:
   stages:
