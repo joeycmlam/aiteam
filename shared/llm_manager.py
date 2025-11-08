@@ -66,14 +66,7 @@ class LLMManager:
         
         Requires: GITHUB_TOKEN in .env file
         """
-        try:
-            if not self.github_token:
-                print("⚠️  GITHUB_TOKEN not found in .env file")
-                print("   Get your token from: https://github.com/settings/tokens")
-                print("   Add to .env: GITHUB_TOKEN=your_token_here")
-                print("   Falling back to Ollama...")
-                return self._generate_with_ollama(prompt, system_message)
-            
+        try:            
             print("   🤖 Calling GitHub Models API (GPT-4o)...")
             
             # GitHub Models API endpoint
