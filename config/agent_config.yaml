@@ -1,6 +1,6 @@
 llm:
-  provider: "ollama" # or "github_copilot"
-  model: "llama3.2"
+  provider: "ollama" # Options: "ollama", "github_copilot_cli" (deprecated), "anthropic"
+  model: "llama3.2" # For ollama: llama3.2, qwen2.5, mistral, phi3
   temperature: 0.3
 
 jira:
