@@ -41,11 +41,18 @@ class LLMManager:
         else:
             return self._generate_with_ollama(prompt, system_message)
     
+    def _fallback_to_ollama(self, prompt: str, system_message: str = None, reason: str = None) -> str:
+        """Helper method to fallback to Ollama with consistent messaging"""
+        if reason:
+            print(f"⚠️  {reason}")
+        print("   Falling back to Ollama...")
+        return self._generate_with_ollama(prompt, system_message)
+    
     def _generate_with_github_copilot(self, prompt: str, system_message: str = None) -> str:
         """
         Use GitHub Copilot API
         Note: This uses Copilot's completion API which is part of your subscription
-        """
+        ""
         try:
             # GitHub Copilot uses a special API endpoint
             # For now, we'll use Ollama as primary since Copilot API is mainly for IDE
@@ -53,24 +60,29 @@ class LLMManager:
             return self._generate_with_ollama(prompt, system_message)
             
         except Exception as e:
-            print(f"⚠️  GitHub Copilot API error: {e}")
-            print("   Falling back to Ollama...")
-            return self._generate_with_ollama(prompt, system_message)
+            return self._fallback_to_ollama(prompt, system_message, f"GitHub Copilot API error: {e}")
     
     def _generate_with_github_copilot_cli(self, prompt: str, system_message: str = None) -> str:
         """
         Use GitHub Models API (available with Copilot subscription)
         
-        GitHub provides access to Claude 3.5 Sonnet and other models through
-        the GitHub Models API for Copilot subscribers.
+        Provides access to GPT-4o and other models through GitHub Models API.
+        Included with GitHub Copilot subscription.
         
-        Requires: GITHUB_TOKEN in .env file
+        Available models: gpt-4o, gpt-4o-mini, mistral-large
+        (Claude models are NOT available)
+        
+        Requires: GITHUB_TOKEN in .env file with 'read:user' scope
         """
+        # Check if GitHub token is configured
+        if not self.github_token:
+            print("   GITHUB_TOKEN not found in .env file")
+            print("   Get your token from: https://github.com/settings/tokens")
+            print("   Add to .env: GITHUB_TOKEN=your_token_here")
+            return self._fallback_to_ollama(prompt, system_message)
+        
         try:            
             print("   🤖 Calling GitHub Models API (GPT-4o)...")
-            
-            # GitHub Models API endpoint
-            url = "https://models.inference.ai.azure.com/chat/completions"
             
             # Build messages
             messages = []
@@ -78,72 +90,65 @@ class LLMManager:
                 messages.append({"role": "system", "content": system_message})
             messages.append({"role": "user", "content": prompt})
             
-            # API request payload
-            payload = {
-                "messages": messages,
-                "model": "gpt-4o",  # Available: gpt-4o, gpt-4o-mini, mistral-large (Claude NOT available)
-                "temperature": 0.3,
-                "max_tokens": 4000,
-                "top_p": 1.0
-            }
+            # API request
+            response = requests.post(
+                "https://models.inference.ai.azure.com/chat/completions",
+                json={
+                    "messages": messages,
+                    "model": "gpt-4o",  # Options: gpt-4o, gpt-4o-mini, mistral-large
+                    "temperature": 0.3,
+                    "max_tokens": 4000,
+                    "top_p": 1.0
+                },
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.github_token}"
+                },
+                timeout=60
+            )
             
-            # Headers
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.github_token}"
-            }
-            
-            # Make API call
-            response = requests.post(url, json=payload, headers=headers, timeout=60)
-            
+            # Handle successful response
             if response.status_code == 200:
-                data = response.json()
-                content = data['choices'][0]['message']['content']
+                content = response.json()['choices'][0]['message']['content']
                 print(f"   ✅ GitHub Models API response received")
                 return content
             
-            elif response.status_code == 401:
-                print("⚠️  GitHub token is invalid or expired")
-                print("   Get a new token from: https://github.com/settings/tokens")
-                print("   Scopes needed: 'read:user'")
-                print("   Falling back to Ollama...")
-                return self._generate_with_ollama(prompt, system_message)
+            # Handle specific error codes
+            error_messages = {
+                401: ("GitHub token is invalid or expired",
+                      "Get a new token from: https://github.com/settings/tokens",
+                      "Scopes needed: 'read:user'"),
+                403: ("GitHub Models API access denied",
+                      "This feature requires GitHub Copilot subscription",
+                      "Check: https://github.com/settings/copilot"),
+                429: ("GitHub Models API rate limit exceeded",
+                      "Wait a few minutes and try again",
+                      "")
+            }
             
-            elif response.status_code == 403:
-                print("⚠️  GitHub Models API access denied")
-                print("   This feature requires GitHub Copilot subscription")
-                print("   Check: https://github.com/settings/copilot")
-                print("   Falling back to Ollama...")
-                return self._generate_with_ollama(prompt, system_message)
-            
-            elif response.status_code == 429:
-                print("⚠️  GitHub Models API rate limit exceeded")
-                print("   Wait a few minutes and try again")
-                print("   Falling back to Ollama...")
-                return self._generate_with_ollama(prompt, system_message)
-            
+            if response.status_code in error_messages:
+                for msg in error_messages[response.status_code]:
+                    if msg:
+                        print(f"   {msg}")
             else:
                 error_msg = response.text[:200] if response.text else "Unknown error"
-                print(f"⚠️  GitHub Models API error (status {response.status_code})")
+                print(f"   GitHub Models API error (status {response.status_code})")
                 print(f"   {error_msg}")
-                print("   Falling back to Ollama...")
-                return self._generate_with_ollama(prompt, system_message)
+            
+            return self._fallback_to_ollama(prompt, system_message)
                 
         except requests.exceptions.Timeout:
-            print("⚠️  GitHub Models API timeout (>60s)")
-            print("   Falling back to Ollama...")
-            return self._generate_with_ollama(prompt, system_message)
+            return self._fallback_to_ollama(prompt, system_message, 
+                                           "GitHub Models API timeout (>60s)")
         
         except requests.exceptions.ConnectionError as e:
-            print(f"⚠️  Connection error: {e}")
+            print(f"   Connection error: {e}")
             print("   Check your internet connection")
-            print("   Falling back to Ollama...")
-            return self._generate_with_ollama(prompt, system_message)
+            return self._fallback_to_ollama(prompt, system_message)
         
         except Exception as e:
-            print(f"⚠️  Unexpected error: {type(e).__name__}: {e}")
-            print("   Falling back to Ollama...")
-            return self._generate_with_ollama(prompt, system_message)
+            return self._fallback_to_ollama(prompt, system_message,
+                                           f"Unexpected error: {type(e).__name__}: {e}")
     
     def _generate_with_ollama(self, prompt: str, system_message: str = None) -> str:
         """Use Ollama local LLM"""
