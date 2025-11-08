@@ -1,6 +1,10 @@
 import os
+import sys
 import yaml
 from dotenv import load_dotenv
+
+# Add parent directory to Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import all agents
 from agents.lead_orchestrator import LeadOrchestrator
