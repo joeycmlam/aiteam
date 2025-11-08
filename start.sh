@@ -11,7 +11,7 @@ echo "✅ Ollama started (PID: $OLLAMA_PID)"
 sleep 3
 
 # Activate venv and run pipeline
-cd ~/Documents/aiteam
+cd ~/aiteam
 source venv/bin/activate
 
 echo "🤖 Running migration pipeline..."
