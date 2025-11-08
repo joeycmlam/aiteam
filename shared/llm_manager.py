@@ -57,82 +57,24 @@ class LLMManager:
             return self._generate_with_ollama(prompt, system_message)
     
     def _generate_with_github_copilot_cli(self, prompt: str, system_message: str = None) -> str:
-        """Use GitHub Copilot CLI (gh copilot)"""
-        try:
-            # Combine system message and prompt
-            full_prompt = prompt
-            if system_message:
-                full_prompt = f"{system_message}\n\n{prompt}"
-            
-            # Use gh copilot suggest command interactively
-            # The gh copilot extension uses stdin/stdout for interaction
-            print("   🤖 Calling GitHub Copilot CLI...")
-            
-            result = subprocess.run(
-                ['gh', 'copilot', 'suggest', '--target', 'shell'],
-                input=full_prompt,
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
-            
-            if result.returncode == 0:
-                # Extract the suggestion from the output
-                output = result.stdout.strip()
-                
-                # gh copilot suggest returns formatted output, extract the actual suggestion
-                # It usually has markers like "Suggestion:" or code blocks
-                if output:
-                    # Try to extract code block if present
-                    if '```' in output:
-                        parts = output.split('```')
-                        if len(parts) >= 3:
-                            # Get content between first pair of ```
-                            code = parts[1]
-                            # Remove language identifier if present
-                            lines = code.split('\n')
-                            if lines[0].strip() in ['python', 'bash', 'sh', 'javascript', 'typescript']:
-                                code = '\n'.join(lines[1:])
-                            return code.strip()
-                    
-                    return output
-                else:
-                    print("⚠️  Empty response from GitHub Copilot CLI")
-                    print("   Falling back to Ollama...")
-                    return self._generate_with_ollama(prompt, system_message)
-            else:
-                error_msg = result.stderr.strip()
-                
-                # Check for specific error conditions
-                if 'not logged in' in error_msg.lower() or 'authentication' in error_msg.lower():
-                    print("⚠️  GitHub CLI not authenticated")
-                    print("   Run: gh auth login")
-                    print("   Falling back to Ollama...")
-                elif 'extension not installed' in error_msg.lower() or 'unknown command' in error_msg.lower():
-                    print("⚠️  GitHub Copilot extension not installed")
-                    print("   Install with: gh extension install github/gh-copilot")
-                    print("   Falling back to Ollama...")
-                else:
-                    print(f"⚠️  GitHub Copilot CLI error: {error_msg[:200]}")
-                    print("   Falling back to Ollama...")
-                
-                return self._generate_with_ollama(prompt, system_message)
-                
-        except FileNotFoundError:
-            print("⚠️  GitHub CLI (gh) not found")
-            print("   Install with: brew install gh")
-            print("   Then run: gh auth login")
-            print("   And install extension: gh extension install github/gh-copilot")
-            print("   Falling back to Ollama...")
-            return self._generate_with_ollama(prompt, system_message)
-        except subprocess.TimeoutExpired:
-            print("⚠️  GitHub Copilot CLI timeout (>60s)")
-            print("   Falling back to Ollama...")
-            return self._generate_with_ollama(prompt, system_message)
-        except Exception as e:
-            print(f"⚠️  GitHub Copilot CLI error: {type(e).__name__}: {e}")
-            print("   Falling back to Ollama...")
-            return self._generate_with_ollama(prompt, system_message)
+        """
+        Use GitHub Copilot CLI (gh copilot) - DEPRECATED
+        
+        Note: The gh copilot extension has been deprecated by GitHub.
+        This method will fall back to Ollama automatically.
+        
+        For interactive Copilot usage, use VS Code with Copilot extension instead.
+        """
+        print("⚠️  GitHub Copilot CLI (gh copilot) has been deprecated")
+        print("   GitHub has discontinued the gh copilot extension")
+        print("   For AI assistance, using Ollama instead...")
+        print("")
+        print("💡 To use GitHub Copilot:")
+        print("   • Open VS Code from Applications")
+        print("   • Install GitHub Copilot extension (Cmd+Shift+X)")
+        print("   • Use Copilot Chat (Cmd+I) for interactive assistance")
+        print("")
+        return self._generate_with_ollama(prompt, system_message)
     
     def _generate_with_ollama(self, prompt: str, system_message: str = None) -> str:
         """Use Ollama local LLM"""

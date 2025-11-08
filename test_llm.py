@@ -24,7 +24,7 @@ def test_llm_manager():
     
     # Test with configured provider
     print("\n1️⃣  Testing with configured provider...")
-    llm = LLMManager()
+    llm = LLMManager("github_copilot_cli")  # Uses LLM_PROVIDER from .env (ollama)
     
     print(f"\n📝 Prompt: {test_prompt}")
     print("\n⏳ Generating response...")
