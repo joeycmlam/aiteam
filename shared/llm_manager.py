@@ -6,7 +6,8 @@ from typing import Dict, Optional
 import ollama
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env file with override=True to ensure .env values take precedence
+load_dotenv(override=True)
 
 class LLMManager:
     """Manages LLM calls using GitHub Copilot CLI, Ollama, or other providers"""
@@ -58,23 +59,98 @@ class LLMManager:
     
     def _generate_with_github_copilot_cli(self, prompt: str, system_message: str = None) -> str:
         """
-        Use GitHub Copilot CLI (gh copilot) - DEPRECATED
+        Use GitHub Models API (available with Copilot subscription)
         
-        Note: The gh copilot extension has been deprecated by GitHub.
-        This method will fall back to Ollama automatically.
+        GitHub provides access to Claude 3.5 Sonnet and other models through
+        the GitHub Models API for Copilot subscribers.
         
-        For interactive Copilot usage, use VS Code with Copilot extension instead.
+        Requires: GITHUB_TOKEN in .env file
         """
-        print("⚠️  GitHub Copilot CLI (gh copilot) has been deprecated")
-        print("   GitHub has discontinued the gh copilot extension")
-        print("   For AI assistance, using Ollama instead...")
-        print("")
-        print("💡 To use GitHub Copilot:")
-        print("   • Open VS Code from Applications")
-        print("   • Install GitHub Copilot extension (Cmd+Shift+X)")
-        print("   • Use Copilot Chat (Cmd+I) for interactive assistance")
-        print("")
-        return self._generate_with_ollama(prompt, system_message)
+        try:
+            if not self.github_token:
+                print("⚠️  GITHUB_TOKEN not found in .env file")
+                print("   Get your token from: https://github.com/settings/tokens")
+                print("   Add to .env: GITHUB_TOKEN=your_token_here")
+                print("   Falling back to Ollama...")
+                return self._generate_with_ollama(prompt, system_message)
+            
+            print("   🤖 Calling GitHub Models API (GPT-4o)...")
+            
+            # GitHub Models API endpoint
+            url = "https://models.inference.ai.azure.com/chat/completions"
+            
+            # Build messages
+            messages = []
+            if system_message:
+                messages.append({"role": "system", "content": system_message})
+            messages.append({"role": "user", "content": prompt})
+            
+            # API request payload
+            payload = {
+                "messages": messages,
+                "model": "gpt-4o",  # Available: gpt-4o, gpt-4o-mini, mistral-large (Claude NOT available)
+                "temperature": 0.3,
+                "max_tokens": 4000,
+                "top_p": 1.0
+            }
+            
+            # Headers
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.github_token}"
+            }
+            
+            # Make API call
+            response = requests.post(url, json=payload, headers=headers, timeout=60)
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data['choices'][0]['message']['content']
+                print(f"   ✅ GitHub Models API response received")
+                return content
+            
+            elif response.status_code == 401:
+                print("⚠️  GitHub token is invalid or expired")
+                print("   Get a new token from: https://github.com/settings/tokens")
+                print("   Scopes needed: 'read:user'")
+                print("   Falling back to Ollama...")
+                return self._generate_with_ollama(prompt, system_message)
+            
+            elif response.status_code == 403:
+                print("⚠️  GitHub Models API access denied")
+                print("   This feature requires GitHub Copilot subscription")
+                print("   Check: https://github.com/settings/copilot")
+                print("   Falling back to Ollama...")
+                return self._generate_with_ollama(prompt, system_message)
+            
+            elif response.status_code == 429:
+                print("⚠️  GitHub Models API rate limit exceeded")
+                print("   Wait a few minutes and try again")
+                print("   Falling back to Ollama...")
+                return self._generate_with_ollama(prompt, system_message)
+            
+            else:
+                error_msg = response.text[:200] if response.text else "Unknown error"
+                print(f"⚠️  GitHub Models API error (status {response.status_code})")
+                print(f"   {error_msg}")
+                print("   Falling back to Ollama...")
+                return self._generate_with_ollama(prompt, system_message)
+                
+        except requests.exceptions.Timeout:
+            print("⚠️  GitHub Models API timeout (>60s)")
+            print("   Falling back to Ollama...")
+            return self._generate_with_ollama(prompt, system_message)
+        
+        except requests.exceptions.ConnectionError as e:
+            print(f"⚠️  Connection error: {e}")
+            print("   Check your internet connection")
+            print("   Falling back to Ollama...")
+            return self._generate_with_ollama(prompt, system_message)
+        
+        except Exception as e:
+            print(f"⚠️  Unexpected error: {type(e).__name__}: {e}")
+            print("   Falling back to Ollama...")
+            return self._generate_with_ollama(prompt, system_message)
     
     def _generate_with_ollama(self, prompt: str, system_message: str = None) -> str:
         """Use Ollama local LLM"""

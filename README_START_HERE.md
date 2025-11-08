@@ -5,7 +5,8 @@
 
 ## ✅ What's Working
 
-- ✅ **Ollama LLM** - Running with llama3.2 model
+- ✅ **Ollama LLM** - Running with llama3.2 model (local, unlimited)
+- ✅ **GitHub Models API** - Access to Claude 3.5 Sonnet via Copilot license!
 - ✅ **All 6 AI Agents** - Configured and ready
 - ✅ **Migration Pipeline** - Complete workflow ready
 - ✅ **Test Scripts** - All functional
@@ -37,6 +38,12 @@ python3 test_llm.py
 python3 test_github_copilot.py
 ```
 
+### Test Claude 3.5 Sonnet (via GitHub Models API)
+```bash
+# First: Get GitHub token and add to .env (see GITHUB_MODELS_SETUP.md)
+python3 test_github_models.py
+```
+
 ## 📁 Your Project Structure
 
 ```
@@ -61,9 +68,11 @@ python3 test_github_copilot.py
 │   └── fixtures/             # Sample legacy code
 ├── .env                      # Environment variables
 ├── requirements.txt          # Python dependencies
-├── test_llm.py              # LLM test
-├── test_github_copilot.py   # Copilot test
-└── quick_setup.sh           # Setup helper
+├── test_llm.py                 # LLM test
+├── test_github_copilot.py      # Copilot test  
+├── test_github_models.py       # GitHub Models API test
+├── GITHUB_MODELS_SETUP.md      # Claude 3.5 Sonnet setup guide
+└── quick_setup.sh              # Setup helper
 ```
 
 ## 🔧 Optional: Setup GitHub Copilot in VS Code
