@@ -52,7 +52,7 @@ class LLMManager:
         """
         Use GitHub Copilot API
         Note: This uses Copilot's completion API which is part of your subscription
-        ""
+        """
         try:
             # GitHub Copilot uses a special API endpoint
             # For now, we'll use Ollama as primary since Copilot API is mainly for IDE
