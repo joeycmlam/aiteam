@@ -1,0 +1,163 @@
+# Architect Agent Prompts Configuration
+# Purpose: Externalized prompts for code analysis and architecture recommendations
+# Usage: Customize these prompts for different project types or architectural styles
+
+# Code Analysis Configuration
+analyze_codebase:
+  system_message: "You are a software architect specializing in code analysis and modernization."
+
+# Design Pattern Recommendations
+recommend_patterns:
+  template: |
+    Based on this codebase analysis:
+    - Total files: {total_files}
+    - Languages: {languages}
+    - Complexity: {complexity}
+
+    Recommend 4-5 design patterns for modernizing this legacy code.
+    Format as a simple list with brief rationale.
+
+  system_message: "You are a software architect specializing in design patterns."
+
+# Fallback Configuration
+fallbacks:
+  default_patterns:
+    - "Repository Pattern - for data access layer"
+    - "Factory Pattern - for object creation"
+    - "Strategy Pattern - for business logic variants"
+    - "Dependency Injection - for loose coupling"
+    - "CQRS Pattern - if dealing with complex operations"
+
+# Additional Analysis Prompts (for future use)
+analyze_architecture:
+  template: |
+    Analyze the current architecture of this codebase:
+    - Total files: {total_files}
+    - Languages: {languages}
+    - Modules: {modules}
+
+    Provide:
+    1. Current architecture style (monolith, microservices, layered, etc.)
+    2. Strengths of current design
+    3. Areas for improvement
+    4. Recommended modernization strategy
+
+  system_message: "You are a senior software architect with expertise in system design."
+
+suggest_refactoring:
+  template: |
+    Based on this code analysis:
+    - Complexity: {complexity}
+    - Languages: {languages}
+    - Total files: {total_files}
+
+    Suggest refactoring priorities:
+    1. High-priority refactorings (critical for maintainability)
+    2. Medium-priority improvements (enhance code quality)
+    3. Low-priority optimizations (nice to have)
+
+    Include specific techniques for each.
+
+  system_message: "You are a code quality expert specializing in refactoring strategies."
+
+# System Architecture Design (BA → Architect → Senior Dev → Developer flow)
+design_architecture:
+  template: |
+    Based on this comprehensive Business Analysis:
+
+    ## Raw Requirements
+    {raw_requirements}
+
+    ## Business Analysis
+    {ai_analysis}
+
+    ## User Stories
+    {user_stories}
+
+    ## BDD Scenarios
+    {scenarios}
+
+    Design a complete system architecture that includes:
+
+    1. **System Overview**
+       - Project name and purpose
+       - Key business objectives
+       - Target users and use cases
+
+    2. **Architecture Style**
+       - Recommended architecture pattern (monolithic, microservices, layered, clean architecture, etc.)
+       - Justification for the chosen pattern
+
+    3. **System Components**
+       - High-level modules/layers (e.g., presentation, business logic, data access, infrastructure)
+       - Component responsibilities and interactions
+       - Data flow between components
+
+    4. **Technology Stack Recommendations**
+       - Programming language(s) and version(s)
+       - Framework(s) (e.g., Django, Flask, FastAPI for Python)
+       - Database(s) (relational, NoSQL, caching)
+       - External services/APIs (if needed)
+       - Infrastructure considerations (deployment, hosting)
+
+    5. **Data Model Design**
+       - Core entities and their attributes
+       - Relationships between entities
+       - Data validation rules
+       - Database schema considerations
+
+    6. **API Design** (if applicable)
+       - RESTful endpoints or GraphQL schema
+       - Request/response formats
+       - Authentication and authorization approach
+       - API versioning strategy
+
+    7. **Design Patterns**
+       - Recommended design patterns for each layer
+       - Where and why to apply each pattern
+       - Examples: Repository, Factory, Strategy, Observer, etc.
+
+    8. **Project Structure**
+       - Recommended file/directory layout
+       - Module organization
+       - Configuration management
+
+    9. **Non-Functional Requirements**
+       - Performance targets
+       - Security measures
+       - Scalability considerations
+       - Testing strategy (unit, integration, E2E)
+
+    10. **Implementation Phases**
+        - Phase 1: Core functionality (MVP)
+        - Phase 2: Enhanced features
+        - Phase 3: Optimization and scaling
+        - Dependencies between phases
+
+    11. **Risks and Mitigation**
+        - Technical risks
+        - Mitigation strategies
+        - Alternative approaches
+
+    Format the output as a comprehensive markdown document suitable for Senior Dev Agent to create detailed technical specifications and Developer Agent to implement.
+
+  system_message: "You are a senior software architect with 15+ years of experience designing scalable, maintainable systems across various domains (finance, e-commerce, SaaS). You excel at translating business requirements into practical, well-structured technical architectures."
+
+  fallback_architecture:
+    overview: "System designed based on requirements analysis"
+    architecture_style: "Layered architecture with clean separation of concerns"
+    components:
+      - "Presentation Layer (UI/API)"
+      - "Business Logic Layer (Services)"
+      - "Data Access Layer (Repositories)"
+      - "Infrastructure Layer (Database, External Services)"
+    technology_stack:
+      language: "Python 3.10+"
+      framework: "FastAPI or Django"
+      database: "PostgreSQL"
+      caching: "Redis (optional)"
+    design_patterns:
+      - "Repository Pattern - data access"
+      - "Service Layer Pattern - business logic"
+      - "Factory Pattern - object creation"
+      - "Dependency Injection - loose coupling"
