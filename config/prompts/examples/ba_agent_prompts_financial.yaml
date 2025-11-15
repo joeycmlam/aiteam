@@ -1,0 +1,207 @@
+# Example: Financial Services Prompts
+# Customized BA Agent prompts for financial services projects
+
+# Prompt for extracting structured requirements from JIRA tickets
+extract_requirements:
+  template: |
+    Extract structured requirements from this JIRA ticket for a financial services application:
+
+    ID: {ticket_id}
+    Summary: {summary}
+    Description: {description}
+
+    Extract:
+    1. Core business requirement (1 sentence)
+    2. Regulatory compliance considerations (e.g., SOX, PCI-DSS, GDPR)
+    3. Security requirements (authentication, encryption, data protection)
+    4. Audit trail requirements (what needs to be logged)
+    5. Acceptance criteria (3-4 items in Given-When-Then format)
+    6. Risk assessment (Low/Medium/High)
+
+    Format as JSON with clear sections.
+  system_message: "You are a senior business analyst specializing in financial services technology, with deep knowledge of regulatory compliance (SOX, PCI-DSS, GDPR, FINRA) and security requirements."
+
+# Prompt for analyzing JIRA initiatives
+analyze_initiative:
+  template: |
+    Analyze this JIRA initiative for a financial services project:
+
+    Title: {summary}
+    Description: {description}
+    Type: {issue_type}
+    Number of linked issues: {linked_count}
+
+    Extract:
+    1. Overall business objective (focus on revenue, cost reduction, compliance, or risk mitigation)
+    2. Regulatory compliance impact (which regulations apply)
+    3. Key success criteria (3-5 measurable items)
+    4. Security and audit considerations
+    5. High-level technical approach (must address PCI compliance if handling payments)
+    6. Potential risks or challenges (regulatory, security, operational)
+    7. Data privacy considerations (GDPR, CCPA compliance)
+
+    Format as structured JSON with risk ratings.
+  system_message: "You are a senior business analyst with 15+ years in financial services, specializing in regulatory compliance, risk management, and secure payment processing systems."
+
+# Prompt for comprehensive requirements analysis
+analyze_requirements:
+  template: |
+    Analyze the following requirements for a financial services application:
+
+    RAW REQUIREMENTS:
+    {raw_content}
+
+    Provide comprehensive analysis including:
+
+    1. **Business Objectives** 
+       - Revenue impact
+       - Cost reduction opportunities
+       - Risk mitigation benefits
+       - Compliance improvements
+
+    2. **Regulatory Requirements**
+       - SOX compliance (if applicable)
+       - PCI-DSS compliance (for payment data)
+       - GDPR/CCPA (for customer data)
+       - FINRA (for trading systems)
+       - Other applicable regulations
+
+    3. **Security Requirements**
+       - Authentication and authorization
+       - Data encryption (at rest and in transit)
+       - Access controls
+       - Session management
+       - Secure coding practices
+
+    4. **Audit and Logging**
+       - What actions must be logged
+       - Log retention requirements
+       - Audit trail completeness
+
+    5. **Functional Requirements**
+       - User workflows
+       - System integrations
+       - Data processing
+
+    6. **Non-Functional Requirements**
+       - Performance (transaction processing speed)
+       - Availability (99.9%+ uptime typical)
+       - Scalability (peak transaction volume)
+       - Disaster recovery (RPO/RTO targets)
+
+    7. **User Stories**
+       Format: As a [role], I want [feature] so that [business benefit]
+       Include: customer, compliance officer, auditor, operations user stories
+
+    8. **Acceptance Criteria**
+       - Functional acceptance
+       - Security acceptance
+       - Compliance acceptance
+       - Performance acceptance
+
+    9. **Risks and Dependencies**
+       - Regulatory approval needed
+       - Third-party integrations
+       - Data migration risks
+       - Security vulnerabilities
+
+    10. **Out of Scope**
+        What is explicitly not included
+
+    Format the response as structured markdown with risk ratings (Low/Medium/High/Critical).
+
+  system_message: "You are a principal business analyst and architect specializing in financial services technology. You have deep expertise in regulatory compliance (SOX, PCI-DSS, GDPR, FINRA), security architecture, and risk management. You understand both business and technical requirements for financial applications."
+
+  max_content_length: 5000 # Financial requirements are often lengthy
+
+# Prompt for generating BDD scenarios
+generate_scenarios:
+  template: |
+    Based on the following requirements for a financial services application, create comprehensive BDD scenarios in Gherkin format.
+
+    ANALYSIS:
+    {analysis}
+
+    Create a complete .feature file with:
+
+    1. Feature description (business value and compliance context)
+
+    2. Background (common setup including test accounts, compliance mode)
+
+    3. Scenarios covering:
+       - Happy path (successful transaction/operation)
+       - Compliance verification scenarios
+       - Security scenarios (authentication, authorization)
+       - Audit trail scenarios (logging verification)
+       - Error handling (fraud detection, invalid data)
+       - Edge cases (large transactions, concurrent access)
+       - Regulatory edge cases (transaction limits, reporting)
+
+    4. Tags for test organization:
+       @compliance, @security, @audit, @pci-dss, @sox, @gdpr, @critical, @smoke
+
+    Use proper Gherkin syntax with Given-When-Then format.
+    Include specific data values for testing (amounts, account numbers, etc.)
+    Add comments explaining compliance or security rationale where needed.
+
+  system_message: "You are a QA expert specializing in financial services testing, with deep knowledge of compliance testing, security testing, and regulatory requirements. You create comprehensive test scenarios that cover both functional and non-functional requirements."
+
+  max_analysis_length: 3000
+
+# Fallback templates when AI is unavailable
+fallbacks:
+  requirements_analysis: |
+    # Financial Services Requirements Analysis (AI Unavailable)
+
+    ## Raw Requirements
+    {raw_content}
+
+    ## Manual Review Required
+    AI analysis unavailable. Please ensure manual review covers:
+    - Regulatory compliance requirements
+    - Security and authentication needs
+    - Audit trail requirements
+    - Data privacy considerations
+    - Risk assessment
+
+    Consult with compliance team before proceeding.
+
+  scenarios: |
+    Feature: Financial Services Feature Implementation
+      As a financial services user
+      I want the system to meet all regulatory and security requirements
+      So that we remain compliant and protect customer data
+
+      @compliance @security
+      Scenario: Basic functionality with compliance checks
+        Given the system is operational and in compliance mode
+        And audit logging is enabled
+        When I perform the required operation
+        Then the operation should complete successfully
+        And all actions should be logged for audit
+        And compliance requirements should be met
+
+# Default values for extracted data
+defaults:
+  assumptions:
+    - "System must maintain PCI-DSS compliance at all times"
+    - "All financial transactions must be logged for audit"
+    - "User authentication follows enterprise security standards"
+    - "Data encryption is required for sensitive financial data"
+    - "Regulatory approval process will be followed"
+    - "Third-party vendor security assessments are current"
+
+  user_story:
+    story: "As a financial services user, I want the system to be secure and compliant so that customer data is protected and regulatory requirements are met"
+    status: "pending"
+
+  acceptance_criteria:
+    - "Functional requirements are met"
+    - "Security requirements are satisfied (authentication, encryption, access control)"
+    - "Compliance requirements are verified (SOX/PCI-DSS/GDPR as applicable)"
+    - "Audit logging captures all required events"
+    - "All tests pass (unit, integration, security, compliance)"
+    - "Code review approved by security architect"
+    - "Penetration testing completed with no critical findings"
+    - "Compliance officer sign-off obtained"
+    - "Documentation updated (including security controls documentation)"

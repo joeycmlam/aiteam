@@ -95,7 +95,6 @@ flowchart TB
     style OLLAMA fill:#d4edda
     style LLM_MGR fill:#f8d7da
     style LEAD fill:#d1ecf1
-<!-- [MermaidChart: 6b98adbc-51e5-45d2-9368-ac3fbabf6aa4] -->
     style PIPELINE fill:#d1ecf1
 ```
 

@@ -1,0 +1,119 @@
+# BA Agent Prompts Configuration
+# Customize these prompts to adjust how the BA Agent analyzes requirements
+
+# Prompt for extracting structured requirements from JIRA tickets
+extract_requirements:
+  template: |
+    Extract structured requirements from this JIRA ticket:
+
+    ID: {ticket_id}
+    Summary: {summary}
+    Description: {description}
+
+    Extract:
+    1. Core business requirement (1 sentence)
+    2. Acceptance criteria (3-4 items in Given-When-Then format)
+    3. Technical considerations
+
+    Format as JSON.
+  system_message: "You are a business analyst."
+
+# Prompt for analyzing JIRA initiatives
+analyze_initiative:
+  template: |
+    Analyze this JIRA initiative and extract:
+
+    Title: {summary}
+    Description: {description}
+    Type: {issue_type}
+    Number of linked issues: {linked_count}
+
+    Extract:
+    1. Overall business objective (2-3 sentences)
+    2. Key success criteria (3-5 items)
+    3. High-level technical approach
+    4. Potential risks or challenges
+
+    Format as structured JSON.
+  system_message: "You are a senior business analyst analyzing project initiatives."
+
+# Prompt for comprehensive requirements analysis
+analyze_requirements:
+  template: |
+    Analyze the following user requirements and provide a comprehensive analysis:
+
+    RAW REQUIREMENTS:
+    {raw_content}
+
+    Provide:
+    1. **Business Objectives** (2-3 clear objectives)
+    2. **Key Assumptions** (List all assumptions that need validation)
+    3. **Functional Requirements** (Detailed list of what the system must do)
+    4. **Non-Functional Requirements** (Performance, security, scalability, etc.)
+    5. **User Stories** (At least 3-5 user stories in format: As a [role], I want [feature] so that [benefit])
+    6. **Acceptance Criteria** (For each user story)
+    7. **Risks and Dependencies** (Potential challenges)
+    8. **Out of Scope** (What is explicitly not included)
+
+    Format the response as structured markdown.
+  system_message: "You are an expert Business Analyst with deep experience in requirements engineering, user story creation, and software specification documentation."
+  max_content_length: 3000
+
+# Prompt for generating BDD scenarios
+generate_scenarios:
+  template: |
+    Based on the following requirements analysis, create comprehensive BDD scenarios in Gherkin format.
+
+    ANALYSIS:
+    {analysis}
+
+    Create a complete .feature file with:
+    1. Feature description
+    2. Background (if applicable)
+    3. At least 3-5 scenarios covering:
+       - Happy path (main success scenario)
+       - Alternative paths
+       - Error handling
+       - Edge cases
+
+    Use proper Gherkin syntax with Given-When-Then format.
+  system_message: "You are a QA expert specializing in BDD and Gherkin syntax. Create clear, testable scenarios."
+  max_analysis_length: 2000
+
+# Fallback templates when AI is unavailable
+fallbacks:
+  requirements_analysis: |
+    # Requirements Analysis (AI Unavailable)
+
+    ## Raw Requirements
+    {raw_content}
+
+    ## Manual Review Needed
+    AI analysis unavailable. Please review requirements manually.
+
+  scenarios: |
+    Feature: Requirements Implementation
+      As a user
+      I want the system to meet the specified requirements
+      So that business objectives are achieved
+
+      Scenario: Basic functionality
+        Given the system is operational
+        When I use the main feature
+        Then I should see expected results
+
+# Default values for extracted data
+defaults:
+  assumptions:
+    - "User requirements are complete and accurate"
+    - "Technical infrastructure is available"
+    - "Stakeholders are available for clarification"
+
+  user_story:
+    story: "As a user, I want the system to work as specified"
+    status: "pending"
+
+  acceptance_criteria:
+    - "Implementation meets requirements"
+    - "All tests pass"
+    - "Code review approved"
