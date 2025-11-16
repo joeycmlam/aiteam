@@ -33,7 +33,7 @@ from agents.lead_orchestrator import LeadOrchestrator
 from agents.architect_agent import ArchitectAgent
 from agents.ba_agent import BAAgent
 from agents.qa_agent import QAAgent
-from agents.tech_lead_agent import SeniorDevAgent
+from agents.tech_lead_agent import TechLeadAgent
 from agents.developer_agent import DeveloperAgent
 from shared.memory_store import SharedMemory
 
@@ -76,7 +76,7 @@ class InitiativePipeline:
         self.architect = ArchitectAgent(llm_config)
         self.ba = BAAgent(llm_config, jira_config)
         self.qa = QAAgent(llm_config)
-        self.senior_dev = SeniorDevAgent(llm_config)
+        self.senior_dev = TechLeadAgent(llm_config)
         self.developer = DeveloperAgent(llm_config)
         
         print("="*70)

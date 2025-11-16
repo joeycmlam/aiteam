@@ -31,6 +31,7 @@ class LeadOrchestrator:
     AVAILABLE_STEPS = {
         'architect': {'name': 'Architecture Analysis', 'agent': 'ArchitectAgent'},
         'ba': {'name': 'Requirements Gathering', 'agent': 'BAAgent'},
+        'tech_lead': {'name': 'Technical Structure Design', 'agent': 'TechLeadAgent'},
         'qa': {'name': 'Test Design', 'agent': 'QAAgent'},
         'developer': {'name': 'Implementation', 'agent': 'DeveloperAgent'},
         'senior_dev': {'name': 'Code Review', 'agent': 'SeniorDevAgent'}
