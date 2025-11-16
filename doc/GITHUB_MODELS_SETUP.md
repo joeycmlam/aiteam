@@ -1,14 +1,18 @@
 # GitHub Models API Setup Guide
 
-## ✅ Access Claude 3.5 Sonnet with Your GitHub Copilot License
+## ⚠️ Important: Claude NOT Available via GitHub Models API
 
-Good news! Your GitHub Copilot subscription includes access to **GitHub Models API**, which provides:
-- **Claude 3.5 Sonnet** (Anthropic)
-- **GPT-4o** (OpenAI)
-- **Mistral Large** (Mistral AI)
-- And more models!
+**CORRECTION**: Claude models are **NOT available** through GitHub Models API despite some documentation claims.
 
-This is the **official way** to programmatically use Claude 3.5 Sonnet with your Copilot license.
+Your GitHub Copilot subscription provides:
+- **GPT-4o** (OpenAI) ✅
+- **GPT-4o-mini** (OpenAI) ✅
+- **Mistral Large** (Mistral AI) ✅
+- ~~**Claude 3.5 Sonnet**~~ ❌ NOT AVAILABLE
+
+**To use Claude with GitHub Copilot license:**
+1. Use VS Code Chat Agents (`.vscode/agents/*.agent.md`) - Claude Sonnet 4 available via chat interface
+2. OR add separate Anthropic API key for programmatic access (not included with Copilot)
 
 ---
 
@@ -74,20 +78,24 @@ print(response)
 
 ---
 
-## 📊 Available Models
+## 📊 Available Models (GitHub Models API)
 
-Change the model in `llm_manager.py` line ~106:
+Change the model in `llm_manager.py` or via `GITHUB_MODEL` env variable:
 
 ```python
-"model": "claude-3.5-sonnet",  # Current setting
+"model": "gpt-4o",  # Recommended for programmatic use
 ```
 
-Available options:
-- `claude-3.5-sonnet` - Anthropic's best model (recommended)
-- `gpt-4o` - OpenAI's latest model
-- `mistral-large` - Mistral AI's flagship model
+**Verified Available Models:**
+- `gpt-4o` - OpenAI's latest model (recommended)
 - `gpt-4o-mini` - Faster, cheaper GPT-4o
-- `phi-3-medium` - Microsoft's efficient model
+- `mistral-large` - Mistral AI's flagship model
+- `o1-preview` - OpenAI's reasoning model
+- `o1-mini` - Smaller reasoning model
+
+**NOT Available:**
+- ❌ `claude-3.5-sonnet` - Use VS Code Chat Agents instead
+- ❌ `claude-*` - Any Claude models
 
 ---
 

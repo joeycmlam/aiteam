@@ -1,0 +1,43 @@
+{
+    "servers": {
+        "jira": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-jira"
+            ],
+            "env": {
+                "JIRA_URL": "https://joeycmlam-1762529818344.atlassian.net",
+                "JIRA_EMAIL": "${input:jiraEmail}",
+                "JIRA_API_TOKEN": "${input:jiraToken}"
+            }
+        },
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "env": {
+                "GITHUB_TOKEN": "${input:githubToken}"
+            }
+        }
+    },
+    "inputs": [
+        {
+            "id": "jiraEmail",
+            "type": "promptSecret",
+            "description": "JIRA email address"
+        },
+        {
+            "id": "jiraToken",
+            "type": "promptSecret",
+            "description": "JIRA API token"
+        },
+        {
+            "id": "githubToken",
+            "type": "promptSecret",
+            "description": "GitHub personal access token"
+        }
+    ]
+}
