@@ -33,7 +33,7 @@ from agents.lead_orchestrator import LeadOrchestrator
 from agents.architect_agent import ArchitectAgent
 from agents.ba_agent import BAAgent
 from agents.qa_agent import QAAgent
-from agents.senior_dev_agent import SeniorDevAgent
+from agents.tech_lead_agent import SeniorDevAgent
 from agents.developer_agent import DeveloperAgent
 from shared.memory_store import SharedMemory
 

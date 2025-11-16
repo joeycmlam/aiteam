@@ -2,12 +2,42 @@ from typing import Dict, List
 from shared.llm_manager import LLMManager
 
 class SeniorDevAgent:
-    """Provides guidance and reviews code"""
+    """
+    Tech Lead Agent - Coordinates team activities and code reviews
+    
+    Focus areas:
+    
+    Code Review:
+    - Review code for quality, security, and maintainability
+    - Ensure adherence to coding standards
+    - Check test coverage and documentation
+    - Validate architectural alignment
+    
+    Team Coordination:
+    - Break down JIRA epics into manageable tasks
+    - Assign work based on team capacity and expertise
+    - Track progress and remove blockers
+    - Facilitate knowledge sharing
+    
+    Technical Standards:
+    - Enforce DevSecOps practices and DORA metrics
+    - Ensure proper Git workflow (feature branches, PRs)
+    - Maintain CI/CD pipeline health
+    - Monitor code quality metrics
+    
+    Review Checklist:
+    - Code follows team standards
+    - Tests are comprehensive and passing
+    - API changes are documented
+    - Security considerations addressed
+    - Performance impact evaluated
+    - Breaking changes identified
+    """
     
     def __init__(self, llm_config: Dict):
         self.llm_config = llm_config
         self.llm = LLMManager()
-        print("👨‍💻 Senior Dev Agent initialized")
+        print("👨‍💻 Tech Lead Agent initialized")
     
     def provide_guidelines(self, context: Dict) -> Dict:
         """Provides coding guidelines"""

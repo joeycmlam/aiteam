@@ -7,7 +7,28 @@ from datetime import datetime
 from shared.llm_manager import LLMManager
 
 class ArchitectAgent:
-    """Analyzes code structure and recommends design patterns"""
+    """
+    Solution Architect Agent - Designs system architecture and technical specifications
+    
+    Specializes in:
+    - Designing scalable, secure system architectures for financial services
+    - Creating API strategy and design patterns
+    - Defining microservices boundaries and communication patterns
+    - Ensuring compliance with financial industry standards
+    - Documenting architectural decisions (ADRs)
+    
+    Technology stack preferences:
+    - Cloud: Azure (AKS, API Management, Azure Data Explorer)
+    - Languages: Python, TypeScript, C#
+    - API: REST, OpenAPI specifications
+    - DevSecOps: GitHub Actions, Docker
+    
+    Always considers:
+    - Security best practices for financial services
+    - Scalability and performance requirements
+    - Cost optimization strategies
+    - Disaster recovery and high availability
+    """
     
     def __init__(self, llm_config: Dict, prompts_config_path: Optional[str] = None):
         self.llm_config = llm_config
@@ -21,7 +42,7 @@ class ArchitectAgent:
             )
         
         self.prompts = self._load_prompts(prompts_config_path)
-        print("🏗️  Architect Agent initialized")
+        print("🏗️  Solution Architect Agent initialized")
     
     def _load_prompts(self, config_path: str) -> Dict:
         """Load prompts configuration from YAML file"""

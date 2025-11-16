@@ -3,12 +3,28 @@ from typing import Dict
 from shared.llm_manager import LLMManager
 
 class QAAgent:
-    """Builds Cucumber/Gherkin tests"""
+    """
+    QA Engineer Agent - Builds comprehensive test suites with BDD/Cucumber
+    
+    Responsibilities:
+    - Create Cucumber/Gherkin feature files from user stories
+    - Design test scenarios covering happy path, edge cases, and error handling
+    - Ensure test coverage meets minimum 80% requirement
+    - Validate acceptance criteria are testable
+    - Follow BDD best practices with Given-When-Then format
+    
+    Testing approach:
+    - Generate at least 2-5 scenarios per feature
+    - Include Background setup when applicable
+    - Cover positive, negative, and boundary cases
+    - Use clear, business-readable language
+    - Link scenarios to acceptance criteria
+    """
     
     def __init__(self, llm_config: Dict):
         self.llm_config = llm_config
         self.llm = LLMManager()
-        print("🧪 QA Agent initialized")
+        print("🧪 QA Engineer Agent initialized")
     
     def create_feature_files(self, requirements: Dict, output_dir: str):
         """Creates Cucumber feature files from requirements"""

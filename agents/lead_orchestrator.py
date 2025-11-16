@@ -3,7 +3,29 @@ from shared.memory_store import SharedMemory
 from shared.llm_manager import LLMManager
 
 class LeadOrchestrator:
-    """Coordinates all agents and manages workflow with flexible step execution"""
+    """
+    Lead Orchestrator - Coordinates all AI agents and manages workflow execution
+    
+    Manages a team of specialized AI agents:
+    - Business Analyst: Requirements analysis and user story creation
+    - Solution Architect: System design and architecture patterns
+    - QA Engineer: Test design and BDD scenario creation
+    - Senior Software Engineer: Code implementation with TDD
+    - Tech Lead: Code review and quality assurance
+    
+    Features:
+    - Flexible workflow execution (full pipeline or individual steps)
+    - Context passing between agents
+    - Step-by-step execution with pause capability
+    - Custom handler registration for workflow customization
+    - Persistent memory for workflow state
+    
+    Workflow strategies:
+    - Sequential execution with automatic context propagation
+    - Parallel processing support (when enabled in config)
+    - Retry mechanisms for failed steps
+    - Graceful error handling with fallbacks
+    """
     
     # Available workflow steps
     AVAILABLE_STEPS = {

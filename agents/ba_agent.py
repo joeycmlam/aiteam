@@ -6,7 +6,22 @@ from jira import JIRA
 from shared.llm_manager import LLMManager
 
 class BAAgent:
-    """Reads JIRA and structures business requirements"""
+    """
+    Business Analyst Agent - Analyzes requirements and creates user stories from JIRA tickets
+    
+    Responsibilities:
+    - Analyze JIRA tickets and extract functional requirements
+    - Create detailed acceptance criteria
+    - Map requirements to technical specifications
+    - Collaborate with stakeholders to clarify ambiguities
+    - Document business rules and workflows
+    
+    When working with JIRA tickets, always:
+    - Break down complex requirements into manageable user stories
+    - Define clear acceptance criteria using Given-When-Then format
+    - Identify dependencies and edge cases
+    - Suggest test scenarios for QA validation
+    """
     
     def __init__(self, llm_config: Dict, jira_config: Dict, prompts_config_path: str = None):
         self.llm_config = llm_config
@@ -22,7 +37,7 @@ class BAAgent:
             )
         
         self.prompts = self._load_prompts(prompts_config_path)
-        print("📋 BA Agent initialized")
+        print("📋 Business Analyst Agent initialized")
     
     def _load_prompts(self, config_path: str) -> Dict:
         """Load prompts configuration from YAML file"""

@@ -14,8 +14,7 @@ sleep 3
 cd ~/aiteam
 source venv/bin/activate
 
-echo "🤖 Running migration pipeline..."
-python workflows/migration_pipeline.py
+python workflows/initiative_pipeline.py
 
 # Cleanup
 echo "🧹 Cleaning up..."
