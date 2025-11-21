@@ -14,7 +14,6 @@ sleep 3
 cd ~/aiteam
 source venv/bin/activate
 
-python workflows/initiative_pipeline.py
 
 # Cleanup
 echo "🧹 Cleaning up..."
