@@ -9,6 +9,13 @@ from dotenv import load_dotenv
 # Load .env file with override=True to ensure .env values take precedence
 load_dotenv(override=True)
 
+# Import anthropic conditionally
+try:
+    import anthropic
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
+
 class LLMManager:
     """Manages LLM calls using GitHub Copilot CLI, Ollama, or other providers"""
     
@@ -18,8 +25,18 @@ class LLMManager:
         self.ollama_host = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
         self.ollama_model = model or os.getenv('OLLAMA_MODEL', 'llama3.2')
         self.github_model = model or os.getenv('GITHUB_MODEL', 'gpt-4o')
+        self.anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
+        self.anthropic_model = model or os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-20250514')
         
-        print(f"🤖 LLM Manager initialized with provider: {self.provider}, model: {self.github_model if self.provider == 'github_copilot_cli' else self.ollama_model}")
+        # Determine which model to show in init message
+        if self.provider == 'anthropic':
+            model_info = self.anthropic_model
+        elif self.provider == 'github_copilot_cli':
+            model_info = self.github_model
+        else:
+            model_info = self.ollama_model
+            
+        print(f"🤖 LLM Manager initialized with provider: {self.provider}, model: {model_info}")
         
         # Check if gh CLI is available for github_copilot_cli provider
         if self.provider == 'github_copilot_cli':
@@ -31,6 +48,16 @@ class LLMManager:
                     print("⚠️  GitHub CLI not found. Install with: brew install gh")
             except FileNotFoundError:
                 print("⚠️  GitHub CLI not found. Install with: brew install gh")
+        
+        # Check Anthropic availability
+        if self.provider == 'anthropic':
+            if not ANTHROPIC_AVAILABLE:
+                print("⚠️  Anthropic package not installed. Install with: pip install anthropic")
+            elif not self.anthropic_api_key:
+                print("⚠️  ANTHROPIC_API_KEY not found in .env file")
+                print("   Get your API key from: https://console.anthropic.com/")
+            else:
+                print(f"✅ Anthropic API configured")
     
     def generate(self, prompt: str, system_message: str = None, max_tokens: int = 4000, model: str = None) -> str:
         """
@@ -40,12 +67,14 @@ class LLMManager:
             prompt: The user prompt
             system_message: Optional system message to set context
             max_tokens: Maximum tokens in response
-            model: Override model for this request (e.g., 'gpt-4o', 'gpt-4o-mini', 'llama3.2')
+            model: Override model for this request (e.g., 'gpt-4o', 'claude-sonnet-4-20250514', 'llama3.2')
         
         Returns:
             Generated text response
         """
-        if self.provider == 'github_copilot_cli':
+        if self.provider == 'anthropic':
+            return self._generate_with_anthropic(prompt, system_message, max_tokens=max_tokens, model=model)
+        elif self.provider == 'github_copilot_cli':
             return self._generate_with_github_copilot_cli(prompt, system_message, model=model)
         elif self.provider == 'github_copilot':
             return self._generate_with_github_copilot(prompt, system_message)
@@ -163,6 +192,85 @@ class LLMManager:
         except requests.exceptions.ConnectionError as e:
             print(f"   Connection error: {e}")
             print("   Check your internet connection")
+            return self._fallback_to_ollama(prompt, system_message)
+        
+        except Exception as e:
+            return self._fallback_to_ollama(prompt, system_message,
+                                           f"Unexpected error: {type(e).__name__}: {e}")
+    
+    def _generate_with_anthropic(self, prompt: str, system_message: str = None, max_tokens: int = 4000, model: str = None) -> str:
+        """
+        Use Anthropic Claude API
+        
+        Provides access to Claude models including Claude Sonnet 4 (claude-sonnet-4-20250514).
+        
+        Available models:
+        - claude-sonnet-4-20250514 (Claude Sonnet 4 - Latest, most capable)
+        - claude-3-5-sonnet-20241022 (Claude 3.5 Sonnet)
+        - claude-3-opus-20240229 (Claude 3 Opus)
+        - claude-3-sonnet-20240229 (Claude 3 Sonnet)
+        - claude-3-haiku-20240307 (Claude 3 Haiku - Fastest)
+        
+        Requires: ANTHROPIC_API_KEY in .env file
+        Get API key from: https://console.anthropic.com/
+        
+        Args:
+            prompt: User prompt
+            system_message: Optional system message
+            max_tokens: Maximum tokens in response (default: 4000)
+            model: Override model (default: claude-sonnet-4-20250514)
+        """
+        # Use provided model or default
+        selected_model = model or self.anthropic_model
+        
+        # Check if Anthropic package is available
+        if not ANTHROPIC_AVAILABLE:
+            print("   Anthropic package not installed")
+            print("   Install with: pip install anthropic")
+            return self._fallback_to_ollama(prompt, system_message)
+        
+        # Check if API key is configured
+        if not self.anthropic_api_key:
+            print("   ANTHROPIC_API_KEY not found in .env file")
+            print("   Get your API key from: https://console.anthropic.com/")
+            return self._fallback_to_ollama(prompt, system_message)
+        
+        try:
+            print(f"   🤖 Calling Anthropic API ({selected_model})...")
+            
+            # Initialize Anthropic client
+            client = anthropic.Anthropic(api_key=self.anthropic_api_key)
+            
+            # Build messages
+            messages = [{"role": "user", "content": prompt}]
+            
+            # API request
+            response = client.messages.create(
+                model=selected_model,
+                max_tokens=max_tokens,
+                temperature=0.3,
+                system=system_message if system_message else "You are a helpful AI assistant.",
+                messages=messages
+            )
+            
+            # Extract text from response
+            content = response.content[0].text
+            print(f"   ✅ Anthropic API response received")
+            return content
+            
+        except anthropic.AuthenticationError:
+            print("   Anthropic API authentication failed")
+            print("   Check your ANTHROPIC_API_KEY in .env")
+            print("   Get a new key from: https://console.anthropic.com/")
+            return self._fallback_to_ollama(prompt, system_message)
+        
+        except anthropic.RateLimitError:
+            print("   Anthropic API rate limit exceeded")
+            print("   Wait a few minutes and try again")
+            return self._fallback_to_ollama(prompt, system_message)
+        
+        except anthropic.APIError as e:
+            print(f"   Anthropic API error: {e}")
             return self._fallback_to_ollama(prompt, system_message)
         
         except Exception as e:

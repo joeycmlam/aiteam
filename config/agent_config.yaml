@@ -1,6 +1,8 @@
 llm:
-  provider: "ollama" # Options: "ollama", "github_copilot_cli" (deprecated), "anthropic"
+  provider: "ollama" # Options: "ollama", "github_copilot_cli", "anthropic"
   model: "llama3.2" # For ollama: llama3.2, qwen2.5, mistral, phi3
+                    # For anthropic: claude-sonnet-4-20250514, claude-3-5-sonnet-20241022
+                    # For github: gpt-4o, gpt-4o-mini
   temperature: 0.3
 
 jira:

@@ -7,6 +7,9 @@ ollama==0.3.3
 langchain==0.3.3
 langchain-community==0.3.2
 
+# Anthropic Claude
+anthropic==0.39.0
+
 # JIRA Integration
 jira==3.8.0
 
