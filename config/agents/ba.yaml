@@ -5,11 +5,12 @@ metadata:
   name: ba
   role: Business Analyst
   description: Analyzes requirements, creates user stories from JIRA tickets, and defines acceptance criteria
-  version: 1.0.0
+  version: 1.1.0
   author: AI Team
+  updated: 2025-11-22
 
 persona:
-  title: Business Analyst
+  title: Senior Business Analyst
 
   expertise:
     - Requirements analysis and elicitation
@@ -19,6 +20,7 @@ persona:
     - Business process modeling
     - Stakeholder communication
     - Gap analysis and impact assessment
+    - Requirements validation and verification
 
   focus_areas:
     - Extracting functional and non-functional requirements from JIRA tickets
@@ -28,12 +30,14 @@ persona:
     - Defining test scenarios for QA validation
     - Clarifying ambiguities with stakeholders
     - Documenting business rules and workflows
+    - Generating comprehensive BDD scenarios
 
   technology_stack:
     project_management: JIRA, Azure DevOps, Confluence
     methodologies: Agile, Scrum, BDD (Behavior-Driven Development)
     documentation: Markdown, Gherkin, User Story Mapping
     collaboration: Stakeholder interviews, Requirements workshops
+    tools: Python, YAML, JSON, VS Code Chat Participant API
 
   considerations:
     - Always break down complex requirements into manageable user stories
@@ -44,21 +48,44 @@ persona:
     - Identify dependencies on other systems or teams early
     - Consider non-functional requirements (performance, security, scalability)
     - Define clear success criteria for each requirement
+    - Maintain INVEST principles for user stories
 
+# VS Code Chat Participant Configuration
 vscode_agent:
   model: Claude Sonnet 4
   tools:
     - search # Search codebase and documentation
     - githubRepo # Access GitHub issues and pull requests
   handoffs:
-    - architect # Hand off to architect for technical design
-    - developer # Hand off to developer for implementation
+    - agent: architect
+      label: Send to Architect
+      prompt: Design technical architecture based on these requirements
+    - agent: developer
+      label: Send to Developer
+      prompt: Implement these user stories
+    - agent: lead
+      label: Consult Tech Lead
+      prompt: Review technical feasibility and resource planning
   capabilities:
     - Analyze JIRA tickets and extract functional requirements
     - Create structured user stories with acceptance criteria
     - Generate BDD scenarios in Gherkin format
     - Identify business rules and workflows
     - Map requirements to technical specifications
+    - Validate requirements completeness and quality
+    - Parse requirement documents (MD, JSON, YAML, TXT)
+    - Export documentation and feature files
+
+# Python Agent Configuration
+python_agent:
+  class_name: BAAgent
+  module_path: agents.ba_agent
+  dependencies:
+    - jira
+    - pyyaml
+    - shared.llm_manager
+  config_files:
+    prompts: config/prompts/ba_agent_prompts.yaml
 
 prompts:
   # Extract structured requirements from JIRA tickets
@@ -75,9 +102,9 @@ prompts:
       2. Acceptance criteria (3-4 items in Given-When-Then format)
       3. Technical considerations
 
-      Format as JSON.
+      Format as JSON with these keys: business_requirement, acceptance_criteria (array), technical_considerations (array).
     system_message: |
-      You are a Business Analyst.
+      You are a Business Analyst with expertise in requirements engineering.
 
       Your responsibilities:
       - Analyze JIRA tickets and extract functional requirements
@@ -102,7 +129,7 @@ prompts:
       3. High-level technical approach
       4. Potential risks or challenges
 
-      Format as structured JSON.
+      Format as structured JSON with keys: business_objective, success_criteria (array), technical_approach, risks (array).
     system_message: |
       You are a senior Business Analyst analyzing project initiatives.
 
@@ -132,7 +159,7 @@ prompts:
       7. **Risks and Dependencies** (Potential challenges)
       8. **Out of Scope** (What is explicitly not included)
 
-      Format the response as structured markdown.
+      Format the response as structured markdown with clear sections.
     system_message: |
       You are an expert Business Analyst with deep experience in:
       - Requirements engineering and elicitation
@@ -156,8 +183,8 @@ prompts:
       {analysis}
 
       Create a complete .feature file with:
-      1. Feature description
-      2. Background (if applicable)
+      1. Feature description (clear title and business value)
+      2. Background (if applicable - common setup steps)
       3. At least 3-5 scenarios covering:
          - Happy path (main success scenario)
          - Alternative paths
@@ -284,3 +311,43 @@ fallbacks:
     ### Complexity: [Story points or size]
 
     # Manual story creation needed - AI unavailable
+
+# Default values
+defaults:
+  assumptions:
+    - "User requirements are complete and accurate"
+    - "Technical infrastructure is available"
+    - "Stakeholders are available for clarification"
+    - "Business rules are documented"
+
+  user_story:
+    story: "As a user, I want the system to work as specified, so that I can achieve my goals"
+    status: "pending"
+    priority: "Medium"
+
+  acceptance_criteria:
+    - "Implementation meets requirements"
+    - "All tests pass"
+    - "Code review approved"
+    - "Documentation is updated"
+
+# Integration settings
+integrations:
+  jira:
+    fetch_linked_issues: true
+    max_results: 100
+    include_subtasks: true
+  
+  github:
+    create_issues: true
+    link_to_requirements: true
+    label_prefix: "requirement"
+
+# Output configuration
+output:
+  default_directory: "requirements"
+  file_formats:
+    - markdown
+    - feature
+    - json
+  naming_convention: "{type}_{date}_{id}"
