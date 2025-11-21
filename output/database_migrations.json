@@ -1,0 +1,60 @@
+{
+  "migrations": [
+    {
+      "version": "001",
+      "description": "Add user authentication tables",
+      "up_sql": [
+        "CREATE TABLE users (",
+        "    id SERIAL PRIMARY KEY,",
+        "    username VARCHAR(255) NOT NULL UNIQUE,",
+        "    password_hash VARCHAR(255) NOT NULL,",
+        "    email VARCHAR(255) UNIQUE,",
+        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,",
+        "    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+        ");",
+        "CREATE TABLE roles (",
+        "    id SERIAL PRIMARY KEY,",
+        "    name VARCHAR(100) NOT NULL UNIQUE,",
+        "    description TEXT",
+        ");",
+        "CREATE TABLE user_roles (",
+        "    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,",
+        "    role_id INT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,",
+        "    PRIMARY KEY (user_id, role_id)",
+        ");"
+      ],
+      "down_sql": [
+        "DROP TABLE IF EXISTS user_roles;",
+        "DROP TABLE IF EXISTS roles;",
+        "DROP TABLE IF EXISTS users;"
+      ],
+      "data_migration": []
+    }
+  ],
+  "impact_analysis": {
+    "affected_tables": [
+      "users",
+      "roles",
+      "user_roles"
+    ],
+    "breaking_changes": [],
+    "estimated_downtime": "minimal"
+  },
+  "risks": [
+    {
+      "risk": "Potential for username or email conflicts if existing data is migrated.",
+      "severity": "medium",
+      "mitigation": "Ensure usernames and emails are unique before migration. Validate data integrity with pre-migration checks."
+    },
+    {
+      "risk": "Password hashing implementation may fail if not properly tested.",
+      "severity": "high",
+      "mitigation": "Use a robust hashing library (e.g., bcrypt) and test thoroughly in staging environments."
+    },
+    {
+      "risk": "Foreign key constraints may cause issues if referenced data is missing.",
+      "severity": "low",
+      "mitigation": "Ensure all referenced data exists before migration or handle missing data gracefully."
+    }
+  ]
+}

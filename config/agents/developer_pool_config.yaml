@@ -1,0 +1,154 @@
+# Developer Pool Configuration
+
+pool:
+  name: "Development Team"
+  description: "Pool of developers with different specializations"
+  
+specializations:
+  frontend:
+    count: 2
+    primary_skills:
+      - react
+      - typescript
+      - html5
+      - css3
+      - jest
+    secondary_skills:
+      - redux
+      - react_router
+      - webpack
+      - material_ui
+    frameworks:
+      - react
+      - vue
+      - angular
+    tools:
+      - vscode
+      - chrome_devtools
+      - storybook
+    
+  backend:
+    count: 2
+    primary_skills:
+      - python
+      - fastapi
+      - rest_api
+      - sql
+      - redis
+    secondary_skills:
+      - celery
+      - sqlalchemy
+      - pydantic
+      - pytest
+    frameworks:
+      - fastapi
+      - django
+      - flask
+    tools:
+      - pycharm
+      - postman
+      - docker
+  
+  fullstack:
+    count: 1
+    primary_skills:
+      - javascript
+      - python
+      - react
+      - nodejs
+      - sql
+    secondary_skills:
+      - express
+      - mongodb
+      - rest_api
+      - graphql
+    frameworks:
+      - react
+      - nodejs
+      - fastapi
+    tools:
+      - vscode
+      - docker
+      - git
+
+  mobile:
+    count: 0  # Optional, set to 0 to disable
+    primary_skills:
+      - react_native
+      - typescript
+      - mobile_ui
+    secondary_skills:
+      - ios
+      - android
+      - firebase
+    frameworks:
+      - react_native
+      - flutter
+    tools:
+      - expo
+      - xcode
+      - android_studio
+
+task_assignment:
+  strategy: "skill_based"  # skill_based, round_robin, load_balanced
+  load_balancing: true
+  skill_matching_threshold: 0.6
+  max_concurrent_tasks_per_dev: 2
+
+collaboration:
+  pair_programming:
+    enabled: false
+    pairing_strategy: "skill_complement"  # skill_complement, skill_match, random
+  
+  code_review:
+    enabled: true
+    review_required: true
+    min_reviewers: 1
+    cross_specialization: true
+
+best_practices:
+  - "Write clean, readable code"
+  - "Follow SOLID principles"
+  - "Write unit tests for all code"
+  - "Document complex logic"
+  - "Use meaningful variable names"
+  - "Keep functions small and focused"
+  - "Follow team coding standards"
+
+coding_standards:
+  python:
+    style_guide: "pep8"
+    formatter: "black"
+    linter: "pylint"
+    max_line_length: 100
+  
+  javascript:
+    style_guide: "airbnb"
+    formatter: "prettier"
+    linter: "eslint"
+    max_line_length: 100
+  
+  typescript:
+    style_guide: "airbnb"
+    formatter: "prettier"
+    linter: "eslint"
+    strict_mode: true
+
+output:
+  code_format: "language_specific"
+  include_tests: true
+  include_documentation: true
+  include_examples: false
+
+prompts:
+  implementation: |
+    Implement the feature following best practices, SOLID principles,
+    and include comprehensive unit tests. Document complex logic.
+  
+  code_review: |
+    Review the code for quality, maintainability, performance, and security.
+    Provide constructive feedback and specific suggestions for improvement.
+  
+  refactoring: |
+    Refactor the code to improve readability, maintainability, and performance
+    while preserving functionality. Add tests to verify behavior.

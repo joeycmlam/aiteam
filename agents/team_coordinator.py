@@ -31,9 +31,15 @@ class TeamCoordinator:
         self.team_members = {
             'BA': {'role': 'Business Analyst', 'skills': ['requirements', 'jira', 'user_stories']},
             'Architect': {'role': 'Solution Architect', 'skills': ['architecture', 'design', 'patterns']},
+            'Tech Lead': {'role': 'Technical Lead', 'skills': ['review', 'mentoring', 'architecture']},
             'QA': {'role': 'QA Engineer', 'skills': ['testing', 'bdd', 'quality_assurance']},
-            'Developer': {'role': 'Software Developer', 'skills': ['coding', 'implementation', 'tdd']},
-            'Tech Lead': {'role': 'Technical Lead', 'skills': ['review', 'mentoring', 'architecture']}
+            'DBA': {'role': 'Database Administrator', 'skills': ['database', 'schema', 'optimization', 'sql']},
+            'DevOps': {'role': 'DevOps Engineer', 'skills': ['ci_cd', 'infrastructure', 'deployment', 'kubernetes']},
+            'Dev-Frontend-1': {'role': 'Frontend Developer', 'skills': ['react', 'typescript', 'ui', 'css']},
+            'Dev-Frontend-2': {'role': 'Frontend Developer', 'skills': ['react', 'typescript', 'ui', 'css']},
+            'Dev-Backend-1': {'role': 'Backend Developer', 'skills': ['python', 'api', 'fastapi', 'rest']},
+            'Dev-Backend-2': {'role': 'Backend Developer', 'skills': ['python', 'api', 'fastapi', 'rest']},
+            'Dev-FullStack': {'role': 'Full-Stack Developer', 'skills': ['frontend', 'backend', 'general']}
         }
         
         # Team state
@@ -186,7 +192,12 @@ class TeamCoordinator:
         ticket_type = ticket.get('type', 'Story').lower()
         summary = ticket.get('summary', '').lower()
         
-        if 'test' in summary or 'qa' in summary:
+        # Check for specialized assignments
+        if 'database' in summary or 'schema' in summary or 'migration' in summary:
+            return 'DBA'
+        elif 'cicd' in summary or 'deploy' in summary or 'infrastructure' in summary or 'pipeline' in summary:
+            return 'DevOps'
+        elif 'test' in summary or 'qa' in summary:
             return 'QA'
         elif 'architecture' in summary or 'design' in summary:
             return 'Architect'
@@ -194,8 +205,12 @@ class TeamCoordinator:
             return 'BA'
         elif 'review' in summary:
             return 'Tech Lead'
+        elif 'ui' in summary or 'frontend' in summary or 'react' in summary:
+            return 'Dev-Frontend-1'
+        elif 'api' in summary or 'backend' in summary or 'service' in summary:
+            return 'Dev-Backend-1'
         else:
-            return 'Developer'
+            return 'Dev-FullStack'
     
     def facilitate_discussion(self, 
                             topic: str, 

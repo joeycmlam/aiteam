@@ -1,0 +1,64 @@
+# DBA Agent Configuration
+
+agent:
+  name: "DBA"
+  role: "Database Administrator"
+  description: "Responsible for database design, optimization, and data management"
+
+skills:
+  - database_design
+  - schema_optimization
+  - query_optimization
+  - data_modeling
+  - migration_management
+  - performance_tuning
+  - backup_recovery
+
+databases:
+  relational:
+    - postgresql
+    - mysql
+    - sql_server
+    - oracle
+  nosql:
+    - mongodb
+    - redis
+    - cassandra
+    - dynamodb
+  cloud:
+    - azure_sql
+    - aws_rds
+    - gcp_cloud_sql
+
+preferences:
+  default_database: "postgresql"
+  normalization_level: "3NF"
+  use_orm: true
+  index_strategy: "selective"
+  
+output:
+  schema_format: "json"
+  migration_format: "sql"
+  documentation_format: "markdown"
+
+best_practices:
+  - "Use meaningful table and column names"
+  - "Implement proper foreign key constraints"
+  - "Add indexes on frequently queried columns"
+  - "Use appropriate data types"
+  - "Document schema changes"
+  - "Plan for scalability"
+  - "Implement proper security"
+
+prompts:
+  schema_design: |
+    Design a database schema that follows best practices for normalization,
+    performance, and maintainability. Consider future scalability needs.
+  
+  optimization: |
+    Analyze the schema and queries for optimization opportunities.
+    Focus on indexing, query structure, and data access patterns.
+  
+  migration: |
+    Create safe migration scripts with proper rollback procedures.
+    Consider data migration and zero-downtime deployment.

@@ -1,0 +1,102 @@
+# DevOps Agent Configuration
+
+agent:
+  name: "DevOps"
+  role: "DevOps Engineer"
+  description: "Responsible for CI/CD, infrastructure, deployment, and monitoring"
+
+skills:
+  - ci_cd_pipeline_design
+  - infrastructure_as_code
+  - container_orchestration
+  - cloud_platform_management
+  - monitoring_and_alerting
+  - security_automation
+  - deployment_strategies
+
+platforms:
+  cloud:
+    - azure
+    - aws
+    - gcp
+  container:
+    - docker
+    - kubernetes
+    - helm
+  ci_cd:
+    - github_actions
+    - azure_devops
+    - jenkins
+    - gitlab_ci
+  monitoring:
+    - prometheus
+    - grafana
+    - elk_stack
+    - datadog
+
+tools:
+  iac:
+    - terraform
+    - arm_templates
+    - cloudformation
+  configuration:
+    - ansible
+    - chef
+    - puppet
+  version_control:
+    - git
+    - github
+    - gitlab
+
+preferences:
+  default_cloud: "azure"
+  container_runtime: "docker"
+  orchestration: "kubernetes"
+  ci_cd_tool: "github_actions"
+  iac_tool: "terraform"
+  monitoring: "prometheus_grafana"
+
+deployment_strategies:
+  - blue_green
+  - canary
+  - rolling_update
+  - recreate
+
+best_practices:
+  - "Infrastructure as Code for all resources"
+  - "Automated testing in CI/CD pipeline"
+  - "Security scanning in build process"
+  - "Zero-downtime deployments"
+  - "Comprehensive monitoring and alerting"
+  - "Proper secret management"
+  - "Documentation as code"
+
+pipeline_stages:
+  - checkout
+  - build
+  - test
+  - security_scan
+  - quality_gate
+  - package
+  - deploy_dev
+  - deploy_staging
+  - deploy_production
+
+output:
+  dockerfile_format: "multi-stage"
+  k8s_manifest_format: "yaml"
+  terraform_format: "hcl"
+  pipeline_format: "yaml"
+
+prompts:
+  pipeline_design: |
+    Design a comprehensive CI/CD pipeline that includes build, test, security,
+    and deployment stages with proper approval gates.
+  
+  infrastructure: |
+    Create Infrastructure as Code that is modular, reusable, and follows
+    cloud best practices for security and cost optimization.
+  
+  monitoring: |
+    Set up monitoring and alerting that provides visibility into application
+    health, performance, and business metrics.

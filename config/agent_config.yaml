@@ -9,17 +9,91 @@ jira:
   server: "https://joeycmlam-1762529818344.atlassian.net"
   user: "joey.cm.lam@gmail.com"
 
+team:
+  # Developer pool configuration
+  developers:
+    frontend:
+      count: 2
+      skills: ['react', 'typescript', 'html', 'css', 'jest']
+      specialization: 'frontend'
+    backend:
+      count: 2
+      skills: ['python', 'fastapi', 'rest', 'sql', 'redis']
+      specialization: 'backend'
+    fullstack:
+      count: 1
+      skills: ['javascript', 'python', 'react', 'nodejs', 'sql']
+      specialization: 'fullstack'
+  
+  # Specialist agents
+  specialists:
+    dba:
+      enabled: true
+      skills: ['database', 'schema', 'optimization', 'sql', 'nosql']
+      databases: ['postgresql', 'mongodb', 'redis', 'mysql']
+    devops:
+      enabled: true
+      skills: ['ci_cd', 'infrastructure', 'deployment', 'kubernetes', 'docker']
+      platforms: ['azure', 'aws', 'kubernetes', 'docker']
+      tools: ['github_actions', 'terraform', 'helm']
+    qa:
+      enabled: true
+      skills: ['testing', 'bdd', 'automation', 'performance']
+    architect:
+      enabled: true
+      skills: ['architecture', 'design', 'patterns', 'scalability']
+    tech_lead:
+      enabled: true
+      skills: ['review', 'mentoring', 'architecture', 'best_practices']
+    ba:
+      enabled: true
+      skills: ['requirements', 'jira', 'user_stories', 'analysis']
+
 workflow:
   stages:
-    - architecture
-    - requirements
-    - testing
-    - development
-    - review
+    - requirements      # BA analyzes and structures requirements
+    - architecture      # Architect designs system architecture
+    - database          # DBA designs database schema
+    - test_planning     # QA creates test strategy
+    - implementation    # Developers implement features
+    - infrastructure    # DevOps sets up CI/CD and infrastructure
+    - code_review       # Tech Lead reviews code
+    - testing           # QA executes tests
+    - deployment        # DevOps deploys to environments
 
-  parallel_processing: false
+  parallel_processing: true
+  max_concurrent_agents: 5
   max_retries: 3
-
+  
+  # Enable advanced features
+  enable_pair_programming: false
+  enable_code_review_cycles: true
+  enable_cross_functional_reviews: true
+  enable_architecture_review_board: true
+  
+  # Task distribution
+  task_queue:
+    enabled: true
+    priority_based: true
+    dependency_tracking: true
+  
+  # Collaboration
+  collaboration:
+    enabled: true
+    patterns: ['pair_programming', 'code_review', 'cross_functional_review']
+  
   # Copilot workflow options
   use_copilot_for_review: true
   generate_copilot_prompts: true
+
+output:
+  base_dir: "output"
+  subdirs:
+    requirements: "requirements"
+    architecture: "architecture"
+    database: "database"
+    tests: "tests"
+    code: "code"
+    infrastructure: "infrastructure"
+    reviews: "reviews"
+    reports: "reports"
